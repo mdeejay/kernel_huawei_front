@@ -1,0 +1,27 @@
+menuconfig SWITCH
+    tristate "Switch class support"
+    help
+      Say Y here to enable switch class support. This allows
+      monitoring switches by userspace via sysfs and uevent.
+
+if SWITCH
+
+config SWITCH_GPIO
+    tristate "GPIO Swith support"
+    depends on GENERIC_GPIO
+    help
+      Say Y here to enable GPIO based switch support.
+
+config SWITCH_USB
+        tristate "USB Swith support"
+        depends on GENERIC_GPIO
+        help
+          Say Y here to enable USB switch support.
+
+config SWITCH_USB_TTY_NAME
+        string "send AT cmd by tty"
+        depends on SWITCH_USB
+        default "/dev/xmd-tty5"
+        help
+            Set the correct tty, otherwise the AT cmd can't not sent.
+endif # SWITCH

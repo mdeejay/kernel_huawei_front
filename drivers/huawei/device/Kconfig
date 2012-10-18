@@ -1,0 +1,14 @@
+
+menu "huawei linux device driver support package"
+
+source "drivers/huawei/device/touchscreen/Kconfig"
+
+source "drivers/huawei/device/accelerometer/Kconfig"
+
+source "drivers/huawei/device/compass/Kconfig"
+
+source "drivers/huawei/device/light/Kconfig"
+
+source "drivers/huawei/device/gyroscope/Kconfig"
+
+endmenu

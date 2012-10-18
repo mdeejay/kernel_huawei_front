@@ -1,0 +1,14 @@
+
+#
+# Board ID configuration
+#
+
+menu "Board ID Configuration Support"
+
+config BOARD_ID
+	bool "Board ID Support"
+	default y
+	help
+		if you config this,driver can config themself according the board id.
+
+endmenu
