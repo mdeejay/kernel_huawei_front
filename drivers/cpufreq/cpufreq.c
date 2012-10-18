@@ -32,6 +32,8 @@
 
 #include <trace/events/power.h>
 
+#define SafeBootSpeed 1500000
+
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
  * level driver of CPUFreq support, and its spinlock. This lock
@@ -941,6 +943,10 @@ static int cpufreq_add_dev(struct sys_device *sys_dev)
 		pr_debug("initialization failed\n");
 		goto err_unlock_policy;
 	}
+
+    if (policy->max > SafeBootSpeed)
+        policy->max = SafeBootSpeed;
+
 	policy->user_policy.min = policy->min;
 	policy->user_policy.max = policy->max;
 
