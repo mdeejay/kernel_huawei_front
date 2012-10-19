@@ -21,7 +21,7 @@
 #define OMAP4_DPLL_MPU_TRIMMED_MASK	(BIT(19) | BIT(18))
 
 static bool bgap_trim_sw_overide;
-static bool dpll_trim_override;
+static bool dpll_trim_override = true;
 
 /**
  * omap4_ldo_trim_configure() - Handle device trim variance
