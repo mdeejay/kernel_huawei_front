@@ -343,7 +343,7 @@ int fat_search_long(struct inode *inode, const unsigned char *name,
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	struct buffer_head *bh = NULL;
-	struct msdos_dir_entry *de;
+	struct msdos_dir_entry *de = NULL;
 	struct nls_table *nls_disk = sbi->nls_disk;
 	unsigned char nr_slots;
 	wchar_t bufuname[14];
