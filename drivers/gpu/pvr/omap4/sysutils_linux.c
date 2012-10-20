@@ -65,7 +65,6 @@ extern bool sgx_idle_logging;
 extern uint sgx_idle_mode;
 extern uint sgx_idle_timeout;
 extern uint sgx_apm_latency;
-extern uint sgx_freq_restrict;
 
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
 extern struct platform_device *gpsPVRLDMDev;
@@ -152,18 +151,7 @@ void RequestSGXFreq(SYS_DATA *psSysData, IMG_BOOL bMaxFreq)
 	int res;
 
 	pdata = (struct gpu_platform_data *)gpsPVRLDMDev->dev.platform_data;
-	switch (sgx_freq_restrict) {
-        case 0:			//set GPU freq to 150M
-            freq_index = 0;
-            break;
-        case 1:			///set GPU freq to 307M
-            freq_index = bMaxFreq ? psSysSpecData->ui32SGXFreqListSize - 3 : 0;
-            break;
-        case 2:		    ///set GPU freq to 384M
-            default:
-        freq_index = bMaxFreq ? psSysSpecData->ui32SGXFreqListSize - 2 : 0;
-        break;
-	}
+	freq_index = bMaxFreq ? psSysSpecData->ui32SGXFreqListSize - 2 : 0;
 
 	if (psSysSpecData->ui32SGXFreqListIndex != freq_index)
 	{

@@ -1,26 +1,26 @@
 /**********************************************************************
  *
  * Copyright (C) Imagination Technologies Ltd. All rights reserved.
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful but, except
- * as otherwise stated in writing, without any warranty; without even the
- * implied warranty of merchantability or fitness for a particular purpose.
+ * 
+ * This program is distributed in the hope it will be useful but, except 
+ * as otherwise stated in writing, without any warranty; without even the 
+ * implied warranty of merchantability or fitness for a particular purpose. 
  * See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ * 
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
  * Contact Information:
  * Imagination Technologies Ltd. <gpl-support@imgtec.com>
- * Home Park Estate, Kings Langley, Herts, WD4 8LZ, UK
+ * Home Park Estate, Kings Langley, Herts, WD4 8LZ, UK 
  *
  ******************************************************************************/
 
@@ -37,6 +37,7 @@
 #include "pvr_bridge_km.h"
 #include "pvr_uaccess.h"
 #include "refcount.h"
+#include "buffer_manager.h"
 
 #if defined(SUPPORT_DRI_DRM)
 #include <drm/drmP.h>
@@ -73,11 +74,10 @@ static void ProcSeqStartstopBridgeStats(struct seq_file *sfile,IMG_BOOL start);
 #endif
 
 extern PVRSRV_LINUX_MUTEX gPVRSRVLock;
-extern int is_shutdown;
 
 #if defined(SUPPORT_MEMINFO_IDS)
 static IMG_UINT64 ui64Stamp;
-#endif
+#endif 
 
 PVRSRV_ERROR
 LinuxBridgeInit(IMG_VOID)
@@ -85,7 +85,7 @@ LinuxBridgeInit(IMG_VOID)
 #if defined(DEBUG_BRIDGE_KM)
 	{
 		g_ProcBridgeStats = CreateProcReadEntrySeq(
-												  "bridge_stats",
+												  "bridge_stats", 
 												  NULL,
 												  ProcSeqNextBridgeStats,
 												  ProcSeqShowBridgeStats,
@@ -111,9 +111,9 @@ LinuxBridgeDeInit(IMG_VOID)
 
 #if defined(DEBUG_BRIDGE_KM)
 
-static void ProcSeqStartstopBridgeStats(struct seq_file *sfile,IMG_BOOL start)
+static void ProcSeqStartstopBridgeStats(struct seq_file *sfile,IMG_BOOL start) 
 {
-	if(start)
+	if(start) 
 	{
 		LinuxLockMutex(&gPVRSRVLock);
 	}
@@ -126,7 +126,7 @@ static void ProcSeqStartstopBridgeStats(struct seq_file *sfile,IMG_BOOL start)
 
 static void* ProcSeqOff2ElementBridgeStats(struct seq_file *sfile, loff_t off)
 {
-	if(!off)
+	if(!off) 
 	{
 		return PVR_PROC_SEQ_START_TOKEN;
 	}
@@ -150,7 +150,7 @@ static void ProcSeqShowBridgeStats(struct seq_file *sfile,void* el)
 {
 	PVRSRV_BRIDGE_DISPATCH_TABLE_ENTRY *psEntry = (	PVRSRV_BRIDGE_DISPATCH_TABLE_ENTRY*)el;
 
-	if(el == PVR_PROC_SEQ_START_TOKEN)
+	if(el == PVR_PROC_SEQ_START_TOKEN) 
 	{
 		seq_printf(sfile,
 						  "Total ioctl call count = %u\n"
@@ -180,7 +180,7 @@ static void ProcSeqShowBridgeStats(struct seq_file *sfile,void* el)
 				   psEntry->ui32CopyToUserTotalBytes);
 }
 
-#endif
+#endif 
 
 
 #if defined(SUPPORT_DRI_DRM)
@@ -200,9 +200,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 	IMG_UINT32 ui32PID = OSGetCurrentProcessIDKM();
 	PVRSRV_PER_PROCESS_DATA *psPerProc;
 	IMG_INT err = -EFAULT;
-	if (is_shutdown) {
-		return err;
-	}
+
 	LinuxLockMutex(&gPVRSRVLock);
 
 #if defined(SUPPORT_DRI_DRM)
@@ -220,8 +218,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 
 		goto unlock_and_return;
 	}
-
-
+	
+	
 	if(OSCopyFromUser(IMG_NULL,
 					  psBridgePackageKM,
 					  psBridgePackageUM,
@@ -233,7 +231,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 #endif
 
 	cmd = psBridgePackageKM->ui32BridgeID;
-
+	
 	if(cmd != PVRSRV_BRIDGE_CONNECT_SERVICES)
 	{
 		PVRSRV_ERROR eError;
@@ -259,7 +257,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 	}
 	else
 	{
-
+		
 		psPerProc = PVRSRVPerProcessData(ui32PID);
 		if(psPerProc == IMG_NULL)
 		{
@@ -338,7 +336,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 				break;
 			}
 
-
+			
 			psEnvPerProc = (PVRSRV_ENV_PER_PROCESS_DATA *)PVRSRVProcessPrivateData(psPerProc);
 			if (psEnvPerProc == IMG_NULL)
 			{
@@ -372,7 +370,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 		default:
 			break;
 	}
-#endif
+#endif 
 
 	err = BridgedDispatchKM(psPerProc, psBridgePackageKM);
 	if(err != PVRSRV_OK)
@@ -385,12 +383,19 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 			PVRSRV_BRIDGE_OUT_EXPORTDEVICEMEM *psExportDeviceMemOUT =
 				(PVRSRV_BRIDGE_OUT_EXPORTDEVICEMEM *)psBridgePackageKM->pvParamOut;
 			PVRSRV_FILE_PRIVATE_DATA *psPrivateData = PRIVATE_DATA(pFile);
+			IMG_HANDLE hMemInfo;
 			PVRSRV_KERNEL_MEM_INFO *psKernelMemInfo;
 
+			if (pvr_get_user(hMemInfo, &psExportDeviceMemOUT->hMemInfo) != 0)
+			{
+				err = -EFAULT;
+				goto unlock_and_return;
+			}
 
+			
 			if(PVRSRVLookupHandle(KERNEL_HANDLE_BASE,
 								  (IMG_PVOID *)&psKernelMemInfo,
-								  psExportDeviceMemOUT->hMemInfo,
+								  hMemInfo,
 								  PVRSRV_HANDLE_TYPE_MEM_INFO) != PVRSRV_OK)
 			{
 				PVR_DPF((PVR_DBG_ERROR, "%s: Failed to look up export handle", __FUNCTION__));
@@ -398,10 +403,16 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 				goto unlock_and_return;
 			}
 
-
+			
 			PVRSRVKernelMemInfoIncRef(psKernelMemInfo);
 
-			psPrivateData->hKernelMemInfo = psExportDeviceMemOUT->hMemInfo;
+			
+			if (psKernelMemInfo->sShareMemWorkaround.bInUse)
+			{
+				BM_XProcIndexAcquire(psKernelMemInfo->sShareMemWorkaround.ui32ShareIndex);
+			}
+
+			psPrivateData->hKernelMemInfo = hMemInfo;
 #if defined(SUPPORT_MEMINFO_IDS)
 			psPrivateData->ui64Stamp = ++ui64Stamp;
 
@@ -441,7 +452,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 			}
 			break;
 		}
-#endif
+#endif 
 
 		default:
 			break;
