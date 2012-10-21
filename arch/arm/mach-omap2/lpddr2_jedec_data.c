@@ -33,43 +33,14 @@ const struct lpddr2_addressing lpddr2_jedec_addressing_table[] = {
 };
 
 /*
- * Base AC Timing values specified by JESD209-2 for 533MHz operation
- * All devices will honour these timings at this frequency.
- * Some devices may have better timings. Using these timings is safe when the
- * timings are not available from the device data sheet.
- */
-const struct lpddr2_timings lpddr2_jedec_timings_533_mhz = {
-	.max_freq	= 533000000,
-	.RL		= 6,
-	.tRPab		= 21,
-	.tRCD		= 18,
-	.tWR		= 15,
-	.tRASmin	= 42,
-	.tRRD		= 10,
-	.tWTRx2		= 15,
-	.tXSR		= 140,
-	.tXPx2		= 15,
-	.tRFCab		= 130,
-	.tRTPx2		= 15,
-	.tCKE		= 3,
-	.tCKESR		= 15,
-	.tZQCS		= 90,
-	.tZQCL		= 360,
-	.tZQINIT	= 1000,
-	.tDQSCKMAXx2	= 11,
-	.tRASmax	= 70,
-	.tFAW		= 50
-};
-
-/*
  * Base AC Timing values specified by JESD209-2 for 466MHz operation
  * All devices will honour these timings at this frequency.
  * Some devices may have better timings. Using these timings is safe when the
  * timings are not available from the device data sheet.
  */
 const struct lpddr2_timings lpddr2_jedec_timings_466_mhz = {
-	.max_freq	= 466000000,
-	.RL		= 6,
+	.max_freq	= 466666666,
+	.RL		= 7,
 	.tRPab		= 21,
 	.tRCD		= 18,
 	.tWR		= 15,

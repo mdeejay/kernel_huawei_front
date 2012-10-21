@@ -13,32 +13,9 @@
 #include <mach/emif.h>
 #include <mach/lpddr2-samsung.h>
 
-const struct lpddr2_timings timings_samsung_533_mhz = {
-	.max_freq	= 533000000,
-	.RL		= 10,
-	.tRPab		= 21,
-	.tRCD		= 18,
-	.tWR		= 15,
-	.tRASmin	= 42,
-	.tRRD		= 10,
-	.tWTRx2		= 15,
-	.tXSR		= 140,
-	.tXPx2		= 15,
-	.tRFCab		= 130,
-	.tRTPx2		= 15,
-	.tCKE		= 3,
-	.tCKESR		= 15,
-	.tZQCS		= 90,
-	.tZQCL		= 360,
-	.tZQINIT	= 1000,
-	.tDQSCKMAXx2	= 11,
-	.tRASmax	= 70,
-	.tFAW		= 50
-};
-
 const struct lpddr2_timings timings_samsung_466_mhz = {
-	.max_freq	= 466000000,
-	.RL		= 8,
+	.max_freq	= 466666666,
+	.RL		= 7,
 	.tRPab		= 21,
 	.tRCD		= 18,
 	.tWR		= 15,
@@ -148,8 +125,7 @@ struct lpddr2_device_info samsung_4G_S4 = {
 		&timings_samsung_200_mhz,
 		&timings_samsung_333_mhz,
 		&timings_samsung_400_mhz,
-		&timings_samsung_466_mhz,
-		&timings_samsung_533_mhz
+		&timings_samsung_466_mhz
 	},
 	.min_tck	= &min_tck_samsung,
 	.type		= LPDDR2_TYPE_S4,

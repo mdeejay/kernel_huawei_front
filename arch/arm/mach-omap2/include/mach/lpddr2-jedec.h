@@ -141,7 +141,6 @@ struct lpddr2_device_info {
 
 /* The following are exported for devices which use JDEC specifications */
 extern const struct lpddr2_addressing lpddr2_jedec_addressing_table[];
-extern const struct lpddr2_timings lpddr2_jedec_timings_533_mhz;
 extern const struct lpddr2_timings lpddr2_jedec_timings_466_mhz;
 extern const struct lpddr2_timings lpddr2_jedec_timings_400_mhz;
 extern const struct lpddr2_timings lpddr2_jedec_timings_333_mhz;
