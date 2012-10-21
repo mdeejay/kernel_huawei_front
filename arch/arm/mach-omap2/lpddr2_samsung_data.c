@@ -15,7 +15,7 @@
 
 const struct lpddr2_timings timings_samsung_533_mhz = {
 	.max_freq	= 533000000,
-	.RL		= 6,
+	.RL		= 10,
 	.tRPab		= 21,
 	.tRCD		= 18,
 	.tWR		= 15,
@@ -38,7 +38,7 @@ const struct lpddr2_timings timings_samsung_533_mhz = {
 
 const struct lpddr2_timings timings_samsung_466_mhz = {
 	.max_freq	= 466000000,
-	.RL		= 6,
+	.RL		= 8,
 	.tRPab		= 21,
 	.tRCD		= 18,
 	.tWR		= 15,
