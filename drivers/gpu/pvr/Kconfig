@@ -110,7 +110,7 @@ config PVR_OMAP_DSS2
 choice
 	prompt "SGX DVFS mode"
 	depends on PVR_SGX
-	default SGX_DVFS_MODE_OPTIMIZED
+	default SGX_DVFS_MODE_NONE
 
 config SGX_DVFS_MODE_NONE
 	bool "None"
