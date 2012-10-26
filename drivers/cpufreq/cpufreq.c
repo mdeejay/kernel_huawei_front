@@ -32,7 +32,7 @@
 
 #include <trace/events/power.h>
 
-#define SafeBootSpeed 1500000
+#define SafeBootSpeed 1200000
 
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
