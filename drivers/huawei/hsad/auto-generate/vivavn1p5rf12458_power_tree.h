@@ -440,11 +440,11 @@ static struct twl4030_platform_data vivavn1p5rf12458_twl6030_twldata = {
 	.vaux2		= &vivavn1p5rf12458_twl6030_vaux2,
 	.vcore2		= &vivavn1p5rf12458_twl6030_vcore2,
 	.v1v29		= &vivavn1p5rf12458_twl6030_v1v29,
-	.vaux3		= &vivavn1p5rf12458_twl6030_vaux3,
-	.vdac		= &vivavn1p5rf12458_twl6030_vdac,
 	.vmmc		= &vivavn1p5rf12458_twl6030_vmmc,
-	.vpp		= &vivavn1p5rf12458_twl6030_vpp,
+	.vdac		= &vivavn1p5rf12458_twl6030_vdac,
+	.vaux3		= &vivavn1p5rf12458_twl6030_vaux3,
 	.vusb		= &vivavn1p5rf12458_twl6030_vusb,
+	.vpp		= &vivavn1p5rf12458_twl6030_vpp,
 };
 
 
@@ -467,8 +467,8 @@ static struct power_voltage_table vivavn1p5rf12458_config_powervalue[] ={
 	{"PMU_VPP"	,1800000},
 	{"COMPASS_VDD_SENSOR"	,2600000},
 	{"GYROSCOPE_VDD_SENSOR"	,2600000},
-	{"ADI_ACCELEROMETER_VDD_SENSOR"	,2600000},
 	{"LCD_LCD_VCI"	,3000000},
+	{"ADI_ACCELEROMETER_VDD_SENSOR"	,2600000},
 	{"TOUCH_SCREEN_TP_AVDD"	,3000000},
 	{"MOTOR_MOTOR"	,3000000},
     {"" , 0},
