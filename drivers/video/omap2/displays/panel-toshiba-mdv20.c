@@ -19,6 +19,7 @@
   
 
 
+
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -175,8 +176,6 @@ struct panel_config {
 
 	struct omap_video_timings timings;
 	//struct omap_dsi_video_timings dsi_video_timings;
-	u32 width_in_um;
-	u32 height_in_um;
 
 	struct {
 		unsigned int sleep_in;
@@ -217,8 +216,6 @@ static struct panel_config panel_configs[] = {
 		     .vsw = 1,
 		     .vbp = 6,
 		     },
-         .width_in_um = 57000,
-         .height_in_um = 101000,
 	/*
 	 .dsi_video_timings = {
 		     .hsa = 1,
@@ -463,6 +460,26 @@ static ssize_t mdv20_bl_set_locked(int level, struct omap_dss_device *dssdev)
 	omapdss_dsi_vc_enable_lp_cmd_mode(dssdev, 0, 0);
     return r;
 }
+/*y=pow_point_six(x)*/
+static int pow_point_six(int x)
+{
+	unsigned long t = x*x*x;
+	int i=0,j=255,k=0;
+	unsigned long t0 = 0;
+	while(j-i>1)
+	{
+		k=(i+j)/2;
+		t0 = k*k*k*k*k;
+		if(t0<t)
+		    i=k;
+		else if (t0>t)
+		    j=k;
+		else
+		    return k;
+	}
+	return k;
+}
+
 static int mdv20_bl_update_status(struct backlight_device *dev)
 {
 	struct omap_dss_device *dssdev = dev_get_drvdata(&dev->dev);
@@ -479,7 +496,12 @@ static int mdv20_bl_update_status(struct backlight_device *dev)
 	/*we compare the brightness of toshiba lcd to iphone4,
 	and find toshiba's brightness is a little stronger,then we reduce
 	20% of the brightness to make it is the same to iphone4.*/
-	level = (level*8)/10;
+//	level = (level*8)/10;
+	/*Our eyes are more sensitive to small brightness.
+	So we adjust the brightness of lcd following iphone4*/
+	level=(level*pow_point_six(level)*100)/2779;				//Y=(X/255)^1.6*255
+	if(level > 255)
+		level = 255;
 	dev_dbg(&dssdev->dev, "update brightness to %d\n", level);
 
 	mutex_lock(&td->lock);
@@ -1253,7 +1275,7 @@ static int mdv20_probe(struct omap_dss_device *dssdev)
 	/* 0004-Added-the-backlight-adjustment-support.patch */
 	struct backlight_properties props;
 	struct backlight_device *bldev;
-	struct lcd_tuning_dev *tuning_dev = 0; 
+	struct lcd_tuning_dev *tuning_dev = 0;
 	/* patch end */
 	int channel = 0;
 
@@ -1281,8 +1303,6 @@ static int mdv20_probe(struct omap_dss_device *dssdev)
 
 	dssdev->panel.config = OMAP_DSS_LCD_TFT;
 	dssdev->panel.timings = panel_config->timings;
-	dssdev->panel.width_in_um = panel_config->width_in_um;
-	dssdev->panel.height_in_um = panel_config->height_in_um;
 	dssdev->panel.data_type = DSI_DT_PXLSTREAM_24BPP_PACKED;
 	dssdev->ctrl.pixel_size = 24;
 	dssdev->panel.acbi = 0;
@@ -1871,6 +1891,7 @@ R63306:
 	
 	return 0;
 
+
 R63308:
     buf[0] = 0xbb;
     buf[1] = 0x0d;	/* color enhancement on, cabc on, hard coded */
@@ -2124,16 +2145,15 @@ static enum omap_dss_update_mode mdv20_get_update_mode(struct omap_dss_device
 static int mdv20_resume(struct omap_dss_device *dssdev)
 {
 	int r=0;
+
 	dev_dbg(&dssdev->dev, "resume\n");
 
 	if(dssdev->skip_init)
 		dssdev->skip_init = false;
 
 	r = mdv20_start(dssdev);
-    if(r)
-    {
-        r = mdv20_start(dssdev);
-    }
+
+	printk("mdv20_start: ret : %d\n",r);
 
 	return r;
 }

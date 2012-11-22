@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #define DSS_SUBSYS_NAME "HDMI"
 
 #include <linux/kernel.h>
@@ -363,39 +364,51 @@ u8 *hdmi_read_edid(struct omap_video_timings *dp)
 static void hdmi_compute_pll(struct omap_dss_device *dssdev, int phy,
 		struct hdmi_pll_info *pi)
 {
-	unsigned long clkin, refclk;
-	u32 mf;
+	u32 clkinKHz;
+	u32 phy_x_nplus1;
+	u32 t;
 
-	clkin = clk_get_rate(hdmi.sys_clk) / 10000;
-	/*
-	 * Input clock is predivided by N + 1
+	clkinKHz = clk_get_rate(hdmi.sys_clk) / 1000;
+
+	/* Input clock is predivided by N + 1
 	 * out put of which is reference clk
 	 */
 	pi->regn = dssdev->clocks.hdmi.regn;
-	refclk = clkin / (pi->regn + 1);
-
-	/*
-	 * multiplier is pixel_clk/ref_clk
-	 * Multiplying by 100 to avoid fractional part removal
-	 */
-	pi->regm = (phy * 100 / (refclk)) / 100;
 	pi->regm2 = dssdev->clocks.hdmi.regm2;
 
-	/*
-	 * fractional multiplier is remainder of the difference between
-	 * multiplier and actual phy(required pixel clock thus should be
-	 * multiplied by 2^18(262144) divided by the reference clock
+	/* Cached multiple for math below */
+	phy_x_nplus1 = phy * (pi->regn + 1);
+	/* m = (((phy) * (n+1)) / clkin)
+	 * The m register does a /10, so we need a value 10 times larger here.
+	 * In order to maintain the most significant digits, the clkin value
+	 * is divide by 10 here which results in a value 10 times larger.
 	 */
-	mf = (phy - pi->regm * refclk) * 262144;
-	pi->regmf = mf / (refclk);
+	pi->regm = ((10 * phy_x_nplus1) / clkinKHz);
+	/* mf (fractional part) = (remainder from regm) * (2^18) / clkin
+	 *
+	 * Unfortunately, there is a potential of overflowing a u32 if we mult
+	 * by (2^18).  So, instead, the remainder will mult'd by (2^8) prior to
+	 * the div by clkin and finally mult'd by (2^10) to ensure the right
+	 * magnitude is maintained.  This method still results in a offset
+	 * from the desired value, so to get very precise, the remainder from
+	 * this division is mult'd by (2^10), divided, and that result is
+	 * added to create the final very precise value.
+	 *
+	 * mf  = (((remainder of regm) << 8) / clkin) << 10
+	 * mf += ((remainder of above) << 10) / clkin
+	 */
+	t = ((10 * phy_x_nplus1) % clkinKHz);
+	pi->regmf = ((t << 8) / clkinKHz) << 10;
+	t = ((t << 8) % clkinKHz);
+	pi->regmf += (t << 10) / clkinKHz;
 
 	/*
 	 * Dcofreq should be set to 1 if required pixel clock
 	 * is greater than 1000MHz
 	 */
-	pi->dcofreq = phy > 1000 * 100;
-	pi->regsd = ((pi->regm * clkin / 10) / ((pi->regn + 1) * 250) + 5) / 10;
-
+	pi->dcofreq = phy > (1000 * 100);
+	pi->regsd = ((pi->regm * (clkinKHz/10) / 10) /
+					((pi->regn + 1) * 250) + 5) / 10;
 	DSSDBG("M = %d Mf = %d\n", pi->regm, pi->regmf);
 	DSSDBG("range = %d sd = %d\n", pi->dcofreq, pi->regsd);
 }

@@ -10,8 +10,12 @@ Description:     Compatibility of differents LCDs.
 
 Function List:   
 
+History:   
+
+     <author>  <time>   <version >   <desc> 
 
 ************************************************************/
+
 
 #include <linux/kernel.h>
 #include <linux/gpio.h>

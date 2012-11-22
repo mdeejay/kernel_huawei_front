@@ -1,3 +1,4 @@
+
 /*
  * linux/drivers/video/omap2/dss/dsi.c
  *

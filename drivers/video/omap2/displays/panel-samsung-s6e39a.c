@@ -18,6 +18,7 @@
  
 
 
+
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -92,7 +93,7 @@
 #endif
 
 /*Adjust the source scanning direction by register F7H*/
-//#define PANEL_INVERT_XY  
+//#define PANEL_INVERT_XY
 /* END:   Modified by meijinfang, 2011/11/22 */
 
 static irqreturn_t sp_te_isr(int irq, void *data);
@@ -209,8 +210,6 @@ struct panel_config {
 
 	struct omap_video_timings timings;
 
-	u32 width_in_um;
-	u32 height_in_um;
 	struct {
 		unsigned int sleep_in;
 		unsigned int sleep_out;
@@ -251,12 +250,10 @@ static struct panel_config panel_configs[] = {
 			.vsw		= 1,
 			.vfp		= 0,
 			.vbp		= 0,
-			.pixel_clock    = 34028,
+			.pixel_clock    = 31028,
 			.x_res		= 540,
 			.y_res		= 960,
 		},
-		.width_in_um = 57000,
-                .height_in_um = 101000,
 		.sleep		= {
 			.sleep_in	= 5,
 			.sleep_out	= 5,
@@ -1413,8 +1410,6 @@ static ssize_t show_reg_store(struct device *dev,
 }
 
 static DEVICE_ATTR(reg, S_IRUGO | S_IWUSR, show_reg_read_all, show_reg_store);
-
-#if 0
 #define QHD_MEM_SIZE 960*540*3
 static int mem_read_x = 0;
 static int mem_read_y = 0;
@@ -1481,8 +1476,6 @@ static ssize_t show_ram_store(struct device *dev,
 }
 
 static DEVICE_ATTR(mem, S_IRUGO | S_IWUSR, show_ram_read, show_ram_store);
-#endif
-
 static DEVICE_ATTR(num_dsi_errors, S_IRUGO, sp_num_errors_show, NULL);
 static DEVICE_ATTR(hw_revision, S_IRUGO, sp_hw_revision_show, NULL);
 static DEVICE_ATTR(cabc_mode, S_IRUGO | S_IWUSR,
@@ -1524,6 +1517,7 @@ static struct attribute *sp_attrs[] = {
 	&dev_attr_lcd_info.attr,
 	&dev_attr_window.attr,
 	&dev_attr_reg.attr,
+	&dev_attr_mem.attr,
 	NULL,
 };
 
@@ -1630,8 +1624,6 @@ static int sp_probe(struct omap_dss_device *dssdev)
 
 	dssdev->panel.config = OMAP_DSS_LCD_TFT;
 	dssdev->panel.timings = panel_config->timings;
-	dssdev->panel.width_in_um = panel_config->width_in_um;
-	dssdev->panel.height_in_um = panel_config->height_in_um;
 	dssdev->ctrl.pixel_size = 24; 
 
 	pd = kzalloc(sizeof(*pd), GFP_KERNEL);
@@ -2356,15 +2348,6 @@ static int sp_power_on(struct omap_dss_device *dssdev)
 		
 	    buf[2]  = 0x00;
 	    r = dsi_vc_dcs_write(pd->dssdev, pd->channel, buf, 3);
-
-	    /*try writing 0xC0 register three times, when write 0xc0 failed*/
-	    if(r)
-            {
-               r = dsi_vc_dcs_write(pd->dssdev, pd->channel, buf, 3);
-
-	        if(r)
-	            r = dsi_vc_dcs_write(pd->dssdev, pd->channel, buf, 3);
-            }
 		}
 #endif
 	/* END: Deleted by meijinfang, 2011/10/20 */

@@ -15,6 +15,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #ifndef __OMAP_OMAPDSS_H
 #define __OMAP_OMAPDSS_H
 
@@ -644,11 +645,6 @@ struct omap_dss_device {
 	void (*platform_disable)(struct omap_dss_device *dssdev);
 	int (*set_backlight)(struct omap_dss_device *dssdev, int level);
 	int (*get_backlight)(struct omap_dss_device *dssdev);
-};
-
-struct omap_dss_hdmi_data
-{
-	int hpd_gpio;
 };
 
 struct omap_dss_driver {
