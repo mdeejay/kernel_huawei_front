@@ -20,8 +20,9 @@
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
- * $Id: bcmutils.c,v 1.277.2.18 2011-01-26 02:32:08 Exp $
+ * $Id: bcmutils.c,v 1.277.2.18 2011-01-26 02:32:08 $
  */
+
 #include <typedefs.h>
 #include <bcmdefs.h>
 #include <stdarg.h>
@@ -986,7 +987,6 @@ pktsetprio(void *pkt, bool update_vtag)
 	return (rc | priority);
 }
 
-#ifndef BCM_BOOTLOADER
 
 static char bcm_undeferrstr[32];
 static const char *bcmerrorstrtable[] = BCMERRSTRINGTABLE;
@@ -1008,7 +1008,6 @@ bcmerrorstr(int bcmerror)
 	return bcmerrorstrtable[-bcmerror];
 }
 
-#endif /* !BCM_BOOTLOADER */
 
 
 
@@ -1591,9 +1590,6 @@ static const char *crypto_algo_names[] = {
 	"UNDEF",
 	"UNDEF",
 	"UNDEF",
-#ifdef BCMWAPI_WPI
-	"WAPI",
-#endif /* BCMWAPI_WPI */
 	"UNDEF"
 };
 

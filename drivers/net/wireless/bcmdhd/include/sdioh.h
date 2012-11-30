@@ -3,13 +3,13 @@
  * Register map and definitions for the Standard Host Controller
  *
  * Copyright (C) 1999-2011, Broadcom Corporation
- *
+ * 
  *         Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
- *
+ * 
  *      As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
@@ -17,13 +17,14 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: sdioh.h,v 13.17.2.3 2011-01-08 05:28:21 Exp $
+ * $Id: sdioh.h 345478 2012-07-18 06:45:15Z $
  */
+
 #ifndef	_SDIOH_H
 #define	_SDIOH_H
 
@@ -89,6 +90,10 @@
 #define SD3_PresetVal_SDR50		0x06a
 #define SD3_PresetVal_SDR104	0x06c
 #define SD3_PresetVal_DDR50		0x06e
+/* SDIO3.0 Revx specific Registers */
+#define SD3_Tuning_Info_Register 0x0EC
+#define SD3_WL_BT_reset_register 0x0F0
+
 
 /* preset value indices */
 #define SD3_PRESETVAL_INITIAL_IX	0

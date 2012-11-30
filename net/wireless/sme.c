@@ -490,13 +490,8 @@ void __cfg80211_connect_result(struct net_device *dev, const u8 *bssid,
 
 	country_ie = (u8 *) ieee80211_bss_get_ie(bss, WLAN_EID_COUNTRY);
 
-    /* Regardless the 11d IE because some wireless router not comply with standard, 
-     * such as set broadcast channel at 12(2467MHz) while set country IE to US.
-     * Another case is that after disassociated from some router with country IE "US"
-       in China region, STA cannot associate with other routers in ch12 without country IE.
-     */
-	/* if (!country_ie) */
-	return;
+	if (!country_ie)
+		return;
 
 	/*
 	 * ieee80211_bss_get_ie() ensures we can access:

@@ -3,13 +3,13 @@
  * of Broadcom HNBU chips.
  *
  * Copyright (C) 1999-2011, Broadcom Corporation
- *
+ * 
  *         Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
- *
+ * 
  *      As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
@@ -17,40 +17,41 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: siutils.h,v 13.251.2.10 2011-02-04 05:06:32 Exp $
+ * $Id: siutils.h 335486 2012-05-28 09:47:55Z $
  */
+
 
 #ifndef	_siutils_h_
 #define	_siutils_h_
 
 
 struct si_pub {
-	uint	socitype;
+	uint	socitype;		
 
-	uint	bustype;
-	uint	buscoretype;
-	uint	buscorerev;
-	uint	buscoreidx;
-	int	ccrev;
-	uint32	cccaps;
-	uint32  cccaps_ext;
-	int	pmurev;
-	uint32	pmucaps;
-	uint	boardtype;
-	uint	boardvendor;
-	uint	boardflags;
-	uint	boardflags2;
-	uint	chip;
-	uint	chiprev;
-	uint	chippkg;
-	uint32	chipst;
-	bool	issim;
-	uint    socirev;
+	uint	bustype;		
+	uint	buscoretype;		
+	uint	buscorerev;		
+	uint	buscoreidx;		
+	int	ccrev;			
+	uint32	cccaps;			
+	uint32  cccaps_ext;			
+	int	pmurev;			
+	uint32	pmucaps;		
+	uint	boardtype;		
+	uint	boardvendor;		
+	uint	boardflags;		
+	uint	boardflags2;		
+	uint	chip;			
+	uint	chiprev;		
+	uint	chippkg;		
+	uint32	chipst;			
+	bool	issim;			
+	uint    socirev;		
 	bool	pci_pr32414;
 
 };
@@ -59,34 +60,35 @@ struct si_pub {
 typedef const struct si_pub si_t;
 
 
-#define	SI_OSH		NULL
+
+#define	SI_OSH		NULL	
 
 #define	BADIDX		(SI_MAXCORES + 1)
 
 
-#define	XTAL			0x1
-#define	PLL			0x2
+#define	XTAL			0x1	
+#define	PLL			0x2	
 
 
-#define	CLK_FAST		0
-#define	CLK_DYNAMIC		2
+#define	CLK_FAST		0	
+#define	CLK_DYNAMIC		2	
 
 
-#define GPIO_DRV_PRIORITY	0
-#define GPIO_APP_PRIORITY	1
-#define GPIO_HI_PRIORITY	2
+#define GPIO_DRV_PRIORITY	0	
+#define GPIO_APP_PRIORITY	1	
+#define GPIO_HI_PRIORITY	2	
 
 
 #define GPIO_PULLUP		0
 #define GPIO_PULLDN		1
 
 
-#define GPIO_REGEVT		0
-#define GPIO_REGEVT_INTMSK	1
-#define GPIO_REGEVT_INTPOL	2
+#define GPIO_REGEVT		0	
+#define GPIO_REGEVT_INTMSK	1	
+#define GPIO_REGEVT_INTPOL	2	
 
 
-#define SI_DEVPATH_BUFSZ	16
+#define SI_DEVPATH_BUFSZ	16	
 
 
 #define	SI_DOATTACH	1
@@ -220,6 +222,8 @@ static INLINE void * si_seci_init(si_t *sih, uint8 use_seci) {return NULL;}
 extern bool si_is_otp_disabled(si_t *sih);
 extern bool si_is_otp_powered(si_t *sih);
 extern void si_otp_power(si_t *sih, bool on);
+extern void si_set_otp_wr_volts(si_t *sih);
+extern void si_set_otp_rd_volts(si_t *sih);
 
 
 extern bool si_is_sprom_available(si_t *sih);
@@ -233,10 +237,10 @@ extern int si_cis_source(si_t *sih);
 #define CIS_OTP		2
 
 
-#define	DEFAULT_FAB	0x0
-#define	CSM_FAB7	0x1
-#define	TSMC_FAB12	0x2
-#define	SMIC_FAB4	0x3
+#define	DEFAULT_FAB	0x0	
+#define	CSM_FAB7	0x1	
+#define	TSMC_FAB12	0x2	
+#define	SMIC_FAB4	0x3	
 extern int si_otp_fabid(si_t *sih, uint16 *fabid, bool rw);
 extern uint16 si_fabid(si_t *sih);
 
@@ -269,4 +273,5 @@ extern uint32 si_pcieserdesreg(si_t *sih, uint32 mdioslave, uint32 offset, uint3
 
 char *si_getnvramflvar(si_t *sih, const char *name);
 
-#endif
+
+#endif	

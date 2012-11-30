@@ -2,13 +2,13 @@
  * Linux cfgp2p driver
  *
  * Copyright (C) 1999-2011, Broadcom Corporation
- *
+ * 
  *         Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
- *
+ * 
  *      As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
@@ -16,7 +16,7 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
@@ -31,6 +31,8 @@
 struct wl_priv;
 extern u32 wl_dbg_level;
 
+typedef struct wifi_p2p_ie wifi_wfd_ie_t;
+
 /* Enumeration of the usages of the BSSCFGs used by the P2P Library.  Do not
  * confuse this with a bsscfg index.  This value is an index into the
  * saved_ie[] array of structures which in turn contains a bsscfg index field.
@@ -42,7 +44,7 @@ typedef enum {
 	P2PAPI_BSSCFG_MAX
 } p2p_bsscfg_type_t;
 
-#define IE_MAX_LEN 300
+#define IE_MAX_LEN 512
 /* Structure to hold all saved P2P and WPS IEs for a BSSCFG */
 struct p2p_saved_ie {
 	u8  p2p_probe_req_ie[IE_MAX_LEN];
@@ -77,7 +79,6 @@ struct p2p_info {
 	wl_p2p_sched_t noa;
 	wl_p2p_ops_t ops;
 	wlc_ssid_t ssid;
-	spinlock_t timer_lock;
 };
 
 /* dongle status */
@@ -92,7 +93,8 @@ enum wl_cfgp2p_status {
 	WLP2P_STATUS_LISTEN_EXPIRED,
 	WLP2P_STATUS_ACTION_TX_COMPLETED,
 	WLP2P_STATUS_ACTION_TX_NOACK,
-	WLP2P_STATUS_SCANNING
+	WLP2P_STATUS_SCANNING,
+	WLP2P_STATUS_GO_NEG_PHASE
 };
 
 
@@ -101,13 +103,13 @@ enum wl_cfgp2p_status {
 #define wl_to_p2p_bss_saved_ie(w, type) 	((wl)->p2p->bss_idx[type].saved_ie)
 #define wl_to_p2p_bss_private(w, type) 	((wl)->p2p->bss_idx[type].private_data)
 #define wl_to_p2p_bss(wl, type) ((wl)->p2p->bss_idx[type])
-#define wl_get_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0 : test_bit(WLP2P_STATUS_ ## stat, \
+#define wl_get_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0:test_bit(WLP2P_STATUS_ ## stat, \
 									&(wl)->p2p->status))
-#define wl_set_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0 : set_bit(WLP2P_STATUS_ ## stat, \
+#define wl_set_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0:set_bit(WLP2P_STATUS_ ## stat, \
 									&(wl)->p2p->status))
-#define wl_clr_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0 : clear_bit(WLP2P_STATUS_ ## stat, \
+#define wl_clr_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0:clear_bit(WLP2P_STATUS_ ## stat, \
 									&(wl)->p2p->status))
-#define wl_chg_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0: change_bit(WLP2P_STATUS_ ## stat, \
+#define wl_chg_p2p_status(wl, stat) ((!(wl)->p2p_supported) ? 0:change_bit(WLP2P_STATUS_ ## stat, \
 									&(wl)->p2p->status))
 #define p2p_on(wl) ((wl)->p2p->on)
 #define p2p_scan(wl) ((wl)->p2p->scan)
@@ -140,7 +142,14 @@ enum wl_cfgp2p_status {
 		}									\
 	} while (0)
 
-
+extern bool
+wl_cfgp2p_is_pub_action(void *frame, u32 frame_len);
+extern bool
+wl_cfgp2p_is_p2p_action(void *frame, u32 frame_len);
+extern bool
+wl_cfgp2p_is_gas_action(void *frame, u32 frame_len);
+extern void
+wl_cfgp2p_print_actframe(bool tx, void *frame, u32 frame_len);
 extern s32
 wl_cfgp2p_init_priv(struct wl_priv *wl);
 extern void
@@ -184,6 +193,9 @@ wl_cfgp2p_find_wpsie(u8 *parse, u32 len);
 
 extern wifi_p2p_ie_t *
 wl_cfgp2p_find_p2pie(u8 *parse, u32 len);
+
+extern wifi_wfd_ie_t *
+wl_cfgp2p_find_wfdie(u8 *parse, u32 len);
 
 extern s32
 wl_cfgp2p_set_management_ie(struct wl_priv *wl, struct net_device *ndev, s32 bssidx,
@@ -260,15 +272,17 @@ wl_cfgp2p_unregister_ndev(struct wl_priv *wl);
 #define WL_P2P_WILDCARD_SSID_LEN 7
 #define WL_P2P_INTERFACE_PREFIX "p2p"
 #define WL_P2P_TEMP_CHAN "11"
-#define IS_PUB_ACT_FRAME(category) ((category == P2P_PUB_AF_CATEGORY))
-#define IS_P2P_ACTION(categry, action) (IS_PUB_ACT_FRAME(category) && (action == P2P_PUB_AF_ACTION))
-#define IS_GAS_REQ(category, action) (IS_PUB_ACT_FRAME(category) && \
-					((action == P2PSD_ACTION_ID_GAS_IREQ) || \
-					(action == P2PSD_ACTION_ID_GAS_CREQ)))
-#define IS_P2P_ACT_REQ(category, subtype) (IS_PUB_ACT_FRAME(category) && \
-						((subtype == P2P_PAF_GON_REQ) || \
-						(subtype == P2P_PAF_INVITE_REQ) || \
-						(subtype == P2P_PAF_PROVDIS_REQ)))
+
+/* If the provision discovery is for JOIN operations, then we need not do an internal scan to find GO */
+#define IS_PROV_DISC_WITHOUT_GROUP_ID(p2p_ie, len) (wl_cfgp2p_retreive_p2pattrib(p2p_ie, P2P_SEID_GROUP_ID) == NULL )
+
+#define IS_GAS_REQ(frame, len) (wl_cfgp2p_is_gas_action(frame, len) && \
+					((frame->action == P2PSD_ACTION_ID_GAS_IREQ) || \
+					(frame->action == P2PSD_ACTION_ID_GAS_CREQ)))
+#define IS_P2P_PUB_ACT_REQ(frame, p2p_ie, len) (wl_cfgp2p_is_pub_action(frame, len) && \
+						((frame->subtype == P2P_PAF_GON_REQ) || \
+						(frame->subtype == P2P_PAF_INVITE_REQ) || \
+						((frame->subtype == P2P_PAF_PROVDIS_REQ) && IS_PROV_DISC_WITHOUT_GROUP_ID(p2p_ie, len))))
 #define IS_P2P_SOCIAL(ch) ((ch == SOCIAL_CHAN_1) || (ch == SOCIAL_CHAN_2) || (ch == SOCIAL_CHAN_3))
 #define IS_P2P_SSID(ssid) (memcmp(ssid, WL_P2P_WILDCARD_SSID, WL_P2P_WILDCARD_SSID_LEN) == 0)
 #endif				/* _wl_cfgp2p_h_ */

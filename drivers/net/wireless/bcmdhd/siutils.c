@@ -3,13 +3,13 @@
  * of the SiliconBackplane-based Broadcom chips.
  *
  * Copyright (C) 1999-2011, Broadcom Corporation
- *
+ * 
  *         Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
- *
+ * 
  *      As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
@@ -17,13 +17,14 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: siutils.c,v 1.813.2.36 2011-02-10 23:43:55 Exp $
+ * $Id: siutils.c,v 1.813.2.36 2011-02-10 23:43:55 $
  */
+
 #include <typedefs.h>
 #include <bcmdefs.h>
 #include <osl.h>
@@ -212,11 +213,11 @@ si_buscore_setup(si_info_t *sii, chipcregs_t *cc, uint bustype, uint32 savewin,
 
 	/* figure out bus/orignal core idx */
 	sii->pub.buscoretype = NODEV_CORE_ID;
-	sii->pub.buscorerev = NOREV;
+	sii->pub.buscorerev = (uint)NOREV;
 	sii->pub.buscoreidx = BADIDX;
 
 	pci = pcie = FALSE;
-	pcirev = pcierev = NOREV;
+	pcirev = pcierev = (uint)NOREV;
 	pciidx = pcieidx = BADIDX;
 
 	for (i = 0; i < sii->numcores; i++) {
@@ -364,6 +365,19 @@ si_doattach(si_info_t *sii, uint devid, osl_t *osh, void *regs,
 		return NULL;
 	}
 
+#if defined(HW_OOB)
+	if (CHIPID(sih->chip) == BCM43362_CHIP_ID) {
+		uint32 gpiocontrol, addr;
+		addr = SI_ENUM_BASE + OFFSETOF(chipcregs_t, gpiocontrol);
+		gpiocontrol = bcmsdh_reg_read(sdh, addr, 4);
+		gpiocontrol |= 0x2;
+		bcmsdh_reg_write(sdh, addr, 4, gpiocontrol);
+		bcmsdh_cfg_write(sdh, SDIO_FUNC_1, 0x10005, 0xf, NULL);
+		bcmsdh_cfg_write(sdh, SDIO_FUNC_1, 0x10006, 0x0, NULL);
+		bcmsdh_cfg_write(sdh, SDIO_FUNC_1, 0x10007, 0x2, NULL);
+	}
+#endif
+
 	if ((CHIPID(sih->chip) == BCM4329_CHIP_ID) && (sih->chiprev == 0) &&
 		(sih->chippkg != BCM4329_289PIN_PKG_ID)) {
 		sih->chippkg = BCM4329_182PIN_PKG_ID;
@@ -400,8 +414,9 @@ si_doattach(si_info_t *sii, uint devid, osl_t *osh, void *regs,
 	}
 
 	/* assume current core is CC */
-	if ((sii->pub.ccrev == 0x25) && ((CHIPID(sih->chip) == BCM43236_CHIP_ID ||
+	if ((sii->pub.ccrev == 0x25) && ((CHIPID(sih->chip) == BCM43234_CHIP_ID ||
 	                                  CHIPID(sih->chip) == BCM43235_CHIP_ID ||
+	                                  CHIPID(sih->chip) == BCM43236_CHIP_ID ||
 	                                  CHIPID(sih->chip) == BCM43238_CHIP_ID) &&
 	                                 (CHIPREV(sii->pub.chiprev) == 0))) {
 
@@ -1882,9 +1897,11 @@ si_is_sprom_available(si_t *sih)
 		return (sih->chipst & CST4315_SPROM_SEL) != 0;
 	case BCM4319_CHIP_ID:
 		return (sih->chipst & CST4319_SPROM_SEL) != 0;
+
 	case BCM4336_CHIP_ID:
 	case BCM43362_CHIP_ID:
 		return (sih->chipst & CST4336_SPROM_PRESENT) != 0;
+
 	case BCM4330_CHIP_ID:
 		return (sih->chipst & CST4330_SPROM_PRESENT) != 0;
 	case BCM4313_CHIP_ID:

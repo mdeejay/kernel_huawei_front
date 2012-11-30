@@ -11,6 +11,7 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+
 #ifndef LINUX_IEEE80211_H
 #define LINUX_IEEE80211_H
 
@@ -1433,21 +1434,12 @@ enum ieee80211_sa_query_action {
 #define WLAN_CIPHER_SUITE_CCMP		0x000FAC04
 #define WLAN_CIPHER_SUITE_WEP104	0x000FAC05
 #define WLAN_CIPHER_SUITE_AES_CMAC	0x000FAC06
-/*
-WAPI
-*/
-#define WLAN_CIPHER_SUITE_SMS4          0x000FAC07
 
 /* AKM suite selectors */
 #define WLAN_AKM_SUITE_8021X		0x000FAC01
 #define WLAN_AKM_SUITE_PSK		0x000FAC02
 #define WLAN_AKM_SUITE_SAE			0x000FAC08
 #define WLAN_AKM_SUITE_FT_OVER_SAE	0x000FAC09
-/*
-WAPI
-*/
-#define WLAN_AKM_SUITE_WAPI_PSK         0x000FAC04
-#define WLAN_AKM_SUITE_WAPI_CERT        0x000FAC12
 
 #define WLAN_MAX_KEY_LEN		32
 

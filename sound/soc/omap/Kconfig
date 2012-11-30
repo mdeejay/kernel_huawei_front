@@ -1,3 +1,7 @@
+#************************************************************************
+#History
+#DTS No.             Author          Date           Reason
+#***********************************************************************
 
 config SND_OMAP_SOC
 	tristate "SoC Audio for the Texas Instruments OMAP chips"
